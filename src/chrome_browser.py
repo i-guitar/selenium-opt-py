@@ -14,14 +14,27 @@ from selenium.webdriver.support.wait import WebDriverWait
 class ChromeBrowser(object):
     """chrome web driver"""
 
-    def __init__(self, *args):
+    def __init__(self, prefs, *args):
         """
         init
-        :param args: web driver启动参数
+        :param prefs: 首选项
+            {
+            "profile.managed_default_content_settings.images": 2    不加载图片
+            "permissions.default.stylesheet": 2    优化css加载
+            }
+        :param args: 启动参数
+            [
+            -headless   无头模式
+            --disable-gpu   禁用GPU加速
+            --window-size=1280,800  设置窗口大小
+            ]
+
         """
         options = Options()
         for arg in args:
             options.add_argument(arg)
+
+        options.add_experimental_option("prefs", prefs)
 
         self.__driver = webdriver.Chrome(options=options)
         self.__driver_wait = WebDriverWait(self.__driver, 10)
@@ -34,7 +47,7 @@ class ChromeBrowser(object):
         """
         self.__driver.get(url)
 
-    def screenshot(self, path, selector=None, position=None):
+    def screenshots(self, path, selector=None, position=None):
         """
         从网页中截图
         :param path: 截图保存路径
